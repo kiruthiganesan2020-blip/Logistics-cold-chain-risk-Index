@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LCRI: Logistics Cold-Chain Risk Index</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
+        <div class="max-w-6xl mx-auto">
+            <!-- Header -->
+            <div class="mb-8">
+                <h1 class="text-4xl font-bold text-gray-800 mb-2">LCRI: Logistics Cold-Chain Risk Index</h1>
+                <p class="text-gray-600">Real-time pharmaceutical shipment risk assessment</p>
+            </div>
+
+            <!-- Preset Buttons -->
+            <div class="mb-6 flex gap-3 flex-wrap">
+                <button onclick="loadPreset('optimal')" class="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 text-sm font-medium transition">
+                    Optimal Conditions
+                </button>
+                <button onclick="loadPreset('mild')" class="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 text-sm font-medium transition">
+                    Mild Challenge
+                </button>
+                <button onclick="loadPreset('critical')" class="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 text-sm font-medium transition">
+                    Critical Risk
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- LEFT: INPUTS -->
+                <div class="lg:col-span-2 space-y-6">
+                    <!-- Shipment Details -->
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <h2 class="text-lg font-semibold text-gray-800 mb-4">Shipment Details</h2>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Shipment ID</label>
+                                <input type="text" id="shipmentID" value="PH-2026-TX01" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">ETA</label>
+                                <input type="time" id="eta" value="18:30" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Origin</label>
+                                <input type="text" id="origin" value="Mumbai, IN" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Destination</label>
+                                <input type="text" id="destination" value="Delhi, IN" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Environmental Data -->
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <h2 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                            <i class="fas fa-thermometer-half"></i> Environmental Data
+                        </h2>
+                        <div class="space-y-4">
+                            <!-- Temperature with Numeric Input -->
+                            <div>
+                                <label class="flex items-center justify-between mb-2">
+                                    <span class="text-sm font-medium text-gray-700">Current Temperature</span>
+                                    <div class="flex items-center gap-1">
+                                        <input type="number" id="currentTempInput" step="0.1" value="9.5" class="w-16 px-1 py-0.5 text-right font-bold text-blue-600 border border-gray-300 rounded text-sm bg-gray-50">
+                                        <span class="text-sm font-bold text-gray-600">°C</span>
+                                    </div>
+                                </label>
+                                <input type="range" id="currentTemp" min="0" max="20" step="0.5" value="9.5" class="w-full h-2 bg-gradient-to-r from-blue-400 via-yellow-400 to-red-500 rounded-lg appearance-none cursor-pointer">
+                                <div class="text-xs text-gray-500 mt-1">Target: 2-8°C (Green), Risk increases beyond</div>
+                            </div>
+
+                            <!-- Humidity -->
+                            <div>
+                                <label class="flex items-center justify-between mb-2">
+                                    <span class="text-sm font-medium text-gray-700">Humidity</span>
+                                    <span class="text-lg font-bold text-blue-600" id="humidityDisplay">65%</span>
+                                </label>
+                                <input type="range" id="humidity" min="20" max="95" value="65" class="w-full">
+                            </div>
+
+                            <!-- Weather Severity -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Weather Severity</label>
+                                <div class="flex gap-2">
+                                    <button onclick="setWeather(0)" id="weather-0" class="flex-1 py-2 rounded text-sm font-medium transition bg-blue-600 text-white">Clear</button>
+                                    <button onclick="setWeather(1)" id="weather-1" class="flex-1 py-2 rounded text-sm font-medium transition bg-gray-200 text-gray-700 hover:bg-gray-300">Mild</button>
+                                    <button onclick="setWeather(2)" id="weather-2" class="flex-1 py-2 rounded text-sm font-medium transition bg-gray-200 text-gray-700 hover:bg-gray-300">Moderate</button>
+                                    <button onclick="setWeather(3)" id="weather-3" class="flex-1 py-2 rounded text-sm font-medium transition bg-gray-200 text-gray-700 hover:bg-gray-300">Severe</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Transit Data -->
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <h2 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                            <i class="fas fa-map-location-dot"></i> Transit Data
+                        </h2>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="flex items-center justify-between mb-2">
+                                    <span class="text-sm font-medium text-gray-700">Traffic Congestion</span>
+                                    <span class="text-lg font-bold text-orange-600" id="trafficDisplay">45%</span>
+                                </label>
+                                <input type="range" id="traffic" min="0" max="100" value="45" class="w-full">
+                            </div>
+
+                            <div>
+                                <label class="flex items-center justify-between mb-2">
+                                    <span class="text-sm font-medium text-gray-700">Estimated Delay</span>
+                                    <span class="text-lg font-bold text-orange-600" id="delayDisplay">35 min</span>
+                                </label>
+                                <input type="range" id="delay" min="0" max="180" step="5" value="35" class="w-full">
+                            </div>
+
+                            <div class="flex items-center gap-3">
+                                <input type="checkbox" id="deviation" class="w-4 h-4">
+                                <label for="deviation" class="text-sm font-medium text-gray-700">Route Deviation Required</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Vehicle Health -->
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <h2 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                            <i class="fas fa-truck"></i> Vehicle Health
+                        </h2>
+                        <div class="space-y-4">
+                            <!-- Refrigeration Unit Slider -->
+                            <div>
+                                <label class="flex items-center justify-between mb-2">
+                                    <span class="text-sm font-medium text-gray-700">Refrigeration Unit</span>
+                                    <span class="text-lg font-bold text-green-600" id="fridgeDisplay">95%</span>
+                                </label>
+                                <input type="range" id="fridge" min="0" max="100" value="95" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600">
+                            </div>
+
+                            <!-- Battery Status Slider -->
+                            <div>
+                                <label class="flex items-center justify-between mb-2">
+                                    <span class="text-sm font-medium text-gray-700">Battery Status</span>
+                                    <span class="text-lg font-bold text-green-600" id="batteryDisplay">88%</span>
+                                </label>
+                                <input type="range" id="battery" min="0" max="100" value="88" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600">
+                            </div>
+
+                            <!-- Engine Status Slider -->
+                            <div>
+                                <label class="flex items-center justify-between mb-2">
+                                    <span class="text-sm font-medium text-gray-700">Engine Status</span>
+                                    <span class="text-lg font-bold text-green-600" id="engineDisplay">100%</span>
+                                </label>
+                                <input type="range" id="engine" min="0" max="100" value="100" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RIGHT: OUTPUTS -->
+                <div class="space-y-6">
+                    <!-- Risk Factors -->
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <h2 class="text-lg font-semibold text-gray-800 mb-4">Risk Factors</h2>
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center p-3 bg-blue-50 rounded-lg border border-blue-200">
+                                <span class="font-medium text-gray-700">Temperature</span>
+                                <span class="text-2xl font-bold text-blue-600" id="tempRiskDisplay">0</span>
+                            </div>
+                            <div class="flex justify-between items-center p-3 bg-orange-50 rounded-lg border border-orange-200">
+                                <span class="font-medium text-gray-700">Traffic</span>
+                                <span class="text-2xl font-bold text-orange-600" id="trafficRiskDisplay">0</span>
+                            </div>
+                            <div class="flex justify-between items-center p-3 bg-purple-50 rounded-lg border border-purple-200">
+                                <span class="font-medium text-gray-700">Weather</span>
+                                <span class="text-2xl font-bold text-purple-600" id="weatherRiskDisplay">0</span>
+                            </div>
+                            <div class="flex justify-between items-center p-3 bg-red-50 rounded-lg border border-red-200">
+                                <span class="font-medium text-gray-700">Vehicle</span>
+                                <span class="text-2xl font-bold text-red-600" id="vehicleRiskDisplay">0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- LCRI Score -->
+                    <div id="lcriCard" class="rounded-lg shadow-md p-6 bg-green-50 border-2 border-green-300">
+                        <h2 class="text-lg font-semibold text-gray-800 mb-3">Composite Index</h2>
+                        <div class="text-center mb-4">
+                            <div class="text-5xl font-bold text-gray-900 mb-2" id="lcriScore">0.0</div>
+                            <div class="text-sm text-gray-600">LCRI Score (0-100)</div>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-3 mb-4">
+                            <div id="lcriBar" class="h-3 rounded-full transition bg-green-500" style="width: 0%"></div>
+                        </div>
+                        <div class="text-sm text-gray-600">
+                            <strong>0-25:</strong> Safe | <strong>26-50:</strong> Monitor | <strong>51-75:</strong> Intervene | <strong>76-100:</strong> Critical
+                        </div>
+                    </div>
+
+                    <!-- Decision -->
+                    <div id="decisionCard" class="rounded-lg shadow-md p-6 bg-green-50 border-2 border-green-300">
+                        <h2 class="text-lg font-semibold text-gray-800 mb-3">Decision Support</h2>
+                        <div class="text-3xl font-bold text-gray-900 mb-3" id="decisionLabel">🟢 Safe</div>
+                        <div class="bg-white bg-opacity-70 p-4 rounded-lg">
+                            <p class="text-sm font-semibold text-gray-800 mb-2">Recommended Action:</p>
+                            <p class="text-gray-700" id="decisionAction">Continue Transit</p>
+                        </div>
+                    </div>
+
+                    <!-- Formula Reference -->
+                    <div class="bg-gray-50 rounded-lg shadow-md p-4">
+                        <h3 class="text-sm font-semibold text-gray-800 mb-3">LCRI Formula</h3>
+                        <div class="text-xs font-mono text-gray-700 space-y-2">
+                            <div>LCRI = (TempR × 0.40) + (TrafficR × 0.25) + (WeatherR × 0.20) + (VehicleR × 0.15)</div>
+                            <div class="mt-3 pt-3 border-t border-gray-300">
+                                <div>TempR = <span id="formulaTempR">0.0</span></div>
+                                <div>TrafficR = <span id="formulaTrafficR">0.0</span></div>
+                                <div>WeatherR = <span id="formulaWeatherR">0.0</span></div>
+                                <div>VehicleR = <span id="formulaVehicleR">0.0</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================================================
+        // CONFIGURATION
+        // ============================================================================
+        const LCRI_CONFIG = {
+            WEIGHTS: {
+                TEMP: 0.40,
+                TRAFFIC: 0.25,
+                WEATHER: 0.20,
+                VEHICLE: 0.15
+            },
+            THRESHOLDS: {
+                SAFE: 26,
+                MONITOR: 51,
+                INTERVENE: 76
+            },
+            TEMP_BANDS: {
+                OPTIMAL_MIN: 2,
+                OPTIMAL_MAX: 8,
+                WARM_MAX: 10,
+                HOT_MAX: 15
+            }
+        };
+
+        const PRESETS = {
+            optimal: {
+                temp: 5.0,
+                humidity: 55,
+                weather: 0,
+                traffic: 15,
+                delay: 5,
+                fridge: 99,
+                battery: 95,
+                engine: 100
+            },
+            mild: {
+                temp: 11.2,
+                humidity: 72,
+                weather: 1,
+                traffic: 55,
+                delay: 45,
+                fridge: 88,
+                battery: 82,
+                engine: 98
+            },
+            critical: {
+                temp: 16.8,
+                humidity: 88,
+                weather: 3,
+                traffic: 85,
+                delay: 120,
+                fridge: 72,
+                battery: 65,
+                engine: 85
+            }
+        };
+
+        // ============================================================================
+        // STATE
+        // ============================================================================
+        let state = {
+            currentTemp: 9.5,
+            humidity: 65,
+            weatherSeverity: 0,
+            traffic: 45,
+            delay: 35,
+            deviation: false,
+            fridge: 95,
+            battery: 88,
+            engine: 100
+        };
+
+        // ============================================================================
+        // RISK CALCULATIONS
+        // ============================================================================
+        function calculateTempRisk() {
+            const t = state.currentTemp;
+            const { OPTIMAL_MIN, OPTIMAL_MAX, WARM_MAX, HOT_MAX } = LCRI_CONFIG.TEMP_BANDS;
+
+            if (t >= OPTIMAL_MIN && t <= OPTIMAL_MAX) return 0;
+            if (t > OPTIMAL_MAX && t <= WARM_MAX) return 30;
+            if (t > WARM_MAX && t <= HOT_MAX) return 70;
+            if (t > HOT_MAX) return 100;
+
+            if (t < OPTIMAL_MIN) {
+                const freezeSeverity = OPTIMAL_MIN - t;
+                return Math.min(50 + (freezeSeverity * 10), 100);
+            }
+
+            return 0;
+        }
+
+        function calculateTrafficRisk() {
+            let risk = state.traffic * 0.6;
+            if (state.delay > 60) risk += 20;
+            if (state.delay > 120) risk += 15;
+            if (state.deviation) risk += 10;
+            return Math.min(risk, 100);
+        }
+
+        function calculateWeatherRisk() {
+            const baseRisk = state.weatherSeverity * 25;
+            const humidityRisk = state.humidity > 80 ? 15 : state.humidity > 70 ? 8 : 0;
+            return Math.min(baseRisk + humidityRisk, 100);
+        }
+
+        function calculateVehicleRisk() {
+            let risk = 0;
+            if (state.fridge < 85) risk += (85 - state.fridge) * 1.5;
+            if (state.battery < 80) risk += (80 - state.battery) * 1.2;
+            if (state.engine < 95) risk += (95 - state.engine);
+            return Math.min(risk, 100);
+        }
+
+        // ============================================================================
+        // UPDATE DISPLAY
+        // ============================================================================
+        function updateDisplay() {
+            const tempRisk = calculateTempRisk();
+            const trafficRisk = calculateTrafficRisk();
+            const weatherRisk = calculateWeatherRisk();
+            const vehicleRisk = calculateVehicleRisk();
+
+            // Update risk factor displays
+            document.getElementById('tempRiskDisplay').textContent = tempRisk.toFixed(0);
+            document.getElementById('trafficRiskDisplay').textContent = trafficRisk.toFixed(0);
+            document.getElementById('weatherRiskDisplay').textContent = weatherRisk.toFixed(0);
+            document.getElementById('vehicleRiskDisplay').textContent = vehicleRisk.toFixed(0);
+
+            // Calculate LCRI
+            const lcri = (tempRisk * LCRI_CONFIG.WEIGHTS.TEMP) +
+                         (trafficRisk * LCRI_CONFIG.WEIGHTS.TRAFFIC) +
+                         (weatherRisk * LCRI_CONFIG.WEIGHTS.WEATHER) +
+                         (vehicleRisk * LCRI_CONFIG.WEIGHTS.VEHICLE);
+
+            document.getElementById('lcriScore').textContent = lcri.toFixed(1);
+
+            // Update LCRI bar
+            const barColor = lcri < 26 ? 'bg-green-500' :
+                            lcri < 51 ? 'bg-yellow-500' :
+                            lcri < 76 ? 'bg-orange-500' : 'bg-red-500';
+            const bar = document.getElementById('lcriBar');
+            bar.className = `h-3 rounded-full transition ${barColor}`;
+            bar.style.width = Math.min(lcri, 100) + '%';
+
+            // Update decision
+            let decision;
+            if (lcri < LCRI_CONFIG.THRESHOLDS.SAFE) {
+                decision = { label: '🟢 Safe', action: 'Continue Transit', color: 'bg-green-50 border-green-300' };
+            } else if (lcri < LCRI_CONFIG.THRESHOLDS.MONITOR) {
+                decision = { label: '🟡 Monitor', action: 'Increase Monitoring', color: 'bg-yellow-50 border-yellow-300' };
+            } else if (lcri < LCRI_CONFIG.THRESHOLDS.INTERVENE) {
+                decision = { label: '🟠 Intervention Required', action: 'Consider Alternative Route', color: 'bg-orange-50 border-orange-300' };
+            } else {
+                decision = { label: '🔴 Critical', action: 'Immediate Action Required', color: 'bg-red-50 border-red-300' };
+            }
+
+            document.getElementById('decisionLabel').textContent = decision.label;
+            document.getElementById('decisionAction').textContent = decision.action;
+            const decisionCard = document.getElementById('decisionCard');
+            decisionCard.className = `rounded-lg shadow-md p-6 ${decision.color} border-2`;
+
+            const lcriCard = document.getElementById('lcriCard');
+            lcriCard.className = `rounded-lg shadow-md p-6 ${decision.color} border-2`;
+
+            // Update formula reference
+            document.getElementById('formulaTempR').textContent = tempRisk.toFixed(1);
+            document.getElementById('formulaTrafficR').textContent = trafficRisk.toFixed(1);
+            document.getElementById('formulaWeatherR').textContent = weatherRisk.toFixed(1);
+            document.getElementById('formulaVehicleR').textContent = vehicleRisk.toFixed(1);
+        }
+
+        // ============================================================================
+        // EVENT LISTENERS
+        // ============================================================================
+        document.getElementById('currentTemp').addEventListener('input', (e) => {
+            state.currentTemp = parseFloat(e.target.value);
+            document.getElementById('currentTempInput').value = state.currentTemp;
+            updateDisplay();
+        });
+
+        document.getElementById('currentTempInput').addEventListener('input', (e) => {
+            state.currentTemp = parseFloat(e.target.value) || 0;
+            document.getElementById('currentTemp').value = state.currentTemp;
+            updateDisplay();
+        });
+
+        document.getElementById('humidity').addEventListener('input', (e) => {
+            state.humidity = parseFloat(e.target.value);
+            document.getElementById('humidityDisplay').textContent = state.humidity + '%';
+            updateDisplay();
+        });
+
+        document.getElementById('traffic').addEventListener('input', (e) => {
+            state.traffic = parseFloat(e.target.value);
+            document.getElementById('trafficDisplay').textContent = state.traffic + '%';
+            updateDisplay();
+        });
+
+        document.getElementById('delay').addEventListener('input', (e) => {
+            state.delay = parseFloat(e.target.value);
+            document.getElementById('delayDisplay').textContent = state.delay + ' min';
+            updateDisplay();
+        });
+
+        document.getElementById('deviation').addEventListener('change', (e) => {
+            state.deviation = e.target.checked;
+            updateDisplay();
+        });
+
+        document.getElementById('fridge').addEventListener('input', (e) => {
+            state.fridge = parseFloat(e.target.value);
+            const color = state.fridge > 85 ? 'text-green-600' : 'text-orange-600';
+            document.getElementById('fridgeDisplay').className = `text-lg font-bold ${color}`;
+            document.getElementById('fridgeDisplay').textContent = state.fridge + '%';
+            updateDisplay();
+        });
+
+        document.getElementById('battery').addEventListener('input', (e) => {
+            state.battery = parseFloat(e.target.value);
+            const color = state.battery > 80 ? 'text-green-600' : 'text-orange-600';
+            document.getElementById('batteryDisplay').className = `text-lg font-bold ${color}`;
+            document.getElementById('batteryDisplay').textContent = state.battery + '%';
+            updateDisplay();
+        });
+
+        document.getElementById('engine').addEventListener('input', (e) => {
+            state.engine = parseFloat(e.target.value);
+            const color = state.engine > 95 ? 'text-green-600' : 'text-orange-600';
+            document.getElementById('engineDisplay').className = `text-lg font-bold ${color}`;
+            document.getElementById('engineDisplay').textContent = state.engine + '%';
+            updateDisplay();
+        });
+
+        // ============================================================================
+        // PRESET LOADER
+        // ============================================================================
+        function loadPreset(name) {
+            const preset = PRESETS[name];
+            state.currentTemp = preset.temp;
+            state.humidity = preset.humidity;
+            state.weatherSeverity = preset.weather;
+            state.traffic = preset.traffic;
+            state.delay = preset.delay;
+            state.fridge = preset.fridge;
+            state.battery = preset.battery;
+            state.engine = preset.engine;
+
+            // Update all inputs
+            document.getElementById('currentTemp').value = preset.temp;
+            document.getElementById('currentTempInput').value = preset.temp;
+            document.getElementById('humidity').value = preset.humidity;
+            document.getElementById('humidityDisplay').textContent = preset.humidity + '%';
+            document.getElementById('traffic').value = preset.traffic;
+            document.getElementById('trafficDisplay').textContent = preset.traffic + '%';
+            document.getElementById('delay').value = preset.delay;
+            document.getElementById('delayDisplay').textContent = preset.delay + ' min';
+            document.getElementById('fridge').value = preset.fridge;
+            document.getElementById('fridgeDisplay').textContent = preset.fridge + '%';
+            document.getElementById('battery').value = preset.battery;
+            document.getElementById('batteryDisplay').textContent = preset.battery + '%';
+            document.getElementById('engine').value = preset.engine;
+            document.getElementById('engineDisplay').textContent = preset.engine + '%';
+
+            // Update weather buttons
+            for (let i = 0; i < 4; i++) {
+                const btn = document.getElementById(`weather-${i}`);
+                if (i === preset.weather) {
+                    btn.className = 'flex-1 py-2 rounded text-sm font-medium transition bg-blue-600 text-white';
+                } else {
+                    btn.className = 'flex-1 py-2 rounded text-sm font-medium transition bg-gray-200 text-gray-700 hover:bg-gray-300';
+                }
+            }
+
+            updateDisplay();
+        }
+
+        // ============================================================================
+        // WEATHER SETTER
+        // ============================================================================
+        function setWeather(level) {
+            state.weatherSeverity = level;
+            for (let i = 0; i < 4; i++) {
+                const btn = document.getElementById(`weather-${i}`);
+                if (i === level) {
+                    btn.className = 'flex-1 py-2 rounded text-sm font-medium transition bg-blue-600 text-white';
+                } else {
+                    btn.className = 'flex-1 py-2 rounded text-sm font-medium transition bg-gray-200 text-gray-700 hover:bg-gray-300';
+                }
+            }
+            updateDisplay();
+        }
+
+        // ============================================================================
+        // INITIAL DISPLAY
+        // ============================================================================
+        updateDisplay();
+    </script>
+</body>
+</html>
