@@ -6,7 +6,7 @@ LCRI (Logistics Cold-Chain Risk Index) evaluates shipment integrity in real time
 
 The platform is designed to support pharmaceutical distributors, cold-chain operators, hospitals, and logistics teams responsible for temperature-sensitive products such as vaccines, biologics, insulin, and specialty medicines.
 
----
+
 
 # Overview
 
@@ -16,7 +16,7 @@ Traditional logistics platforms provide monitoring and tracking but often fail t
 
 LCRI addresses this challenge by calculating a composite operational risk score using real-time shipment telemetry, environmental data, and transit conditions.
 
----
+
 
 # Key Features
 
@@ -24,7 +24,7 @@ LCRI addresses this challenge by calculating a composite operational risk score 
 
 Calculate a unified Logistics Cold-Chain Risk Index (LCRI) between 0 and 100.
 
----
+
 
 ## Temperature Risk Analysis
 
@@ -37,7 +37,7 @@ Supports:
 * Biologics transportation
 * Specialty medicine logistics
 
----
+
 
 ## Traffic Risk Monitoring
 
@@ -48,7 +48,7 @@ Evaluate:
 * Route deviations
 * Estimated arrival disruptions
 
----
+
 
 ## Weather Risk Assessment
 
@@ -60,7 +60,7 @@ Analyze:
 * Storm conditions
 * Heatwave exposure
 
----
+
 
 ## Vehicle Health Monitoring
 
@@ -71,13 +71,13 @@ Evaluate:
 * Battery condition
 * Backup cooling availability
 
----
+
 
 ## Decision Support Engine
 
 Translate risk scores into actionable operational recommendations.
 
----
+
 
 ## Interactive Dashboard
 
@@ -88,7 +88,7 @@ Features:
 * Operational recommendations
 * Preset simulation scenarios
 
----
+
 
 # Mathematical Model
 
@@ -114,7 +114,7 @@ Where:
 | Weather Risk     | 20%    |
 | Vehicle Risk     | 15%    |
 
----
+
 
 # Risk Components
 
@@ -131,7 +131,7 @@ Examples:
 | 10–15°C   | 70   |
 | >15°C     | 100  |
 
----
+
 
 ## Traffic Risk
 
@@ -142,7 +142,7 @@ Based on:
 * Route complexity
 * Delay probability
 
----
+
 
 ## Weather Risk
 
@@ -153,7 +153,7 @@ Based on:
 * Storm conditions
 * Environmental volatility
 
----
+
 
 ## Vehicle Risk
 
@@ -164,7 +164,7 @@ Based on:
 * Battery health
 * Maintenance indicators
 
----
+
 
 # Decision Framework
 
@@ -175,7 +175,7 @@ Based on:
 | 51 – 75     | 🟠 Intervention Required | Evaluate rerouting and contingency plans |
 | 76 – 100    | 🔴 Critical              | Immediate operational intervention       |
 
----
+
 
 # Example Interpretation
 
@@ -200,7 +200,7 @@ Recommended Action:
 * Increase telemetry monitoring
 * Inspect refrigeration system
 
----
+
 
 # Tech Stack
 
@@ -228,7 +228,7 @@ Recommended Action:
 * Gemini API
 * Google AI Studio
 
----
+
 
 # Installation
 
@@ -252,7 +252,7 @@ npm install lucide-react
 npm run dev
 ```
 
----
+
 
 # Project Structure
 
@@ -273,7 +273,7 @@ src/
 └── App.tsx
 ```
 
----
+
 
 # Future Roadmap
 
@@ -301,7 +301,7 @@ src/
 * Compliance reporting
 * Multi-shipment fleet management
 
----
+
 
 # Research Applications
 
@@ -313,7 +313,7 @@ This project can be used for:
 * Predictive logistics research
 * Digital twin experimentation
 
----
+
 
 # Disclaimer
 
@@ -321,7 +321,7 @@ This software is intended for research, educational, and prototype development p
 
 The calculated LCRI score should not be used as the sole basis for regulatory, safety, or operational decisions without independent validation and domain expert review.
 
----
+
 
 # License
 
